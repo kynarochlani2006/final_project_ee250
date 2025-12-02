@@ -1,18 +1,34 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Stock Volatility Dashboard</title>
+    <meta charset="UTF-8">
+    <title>Real-Time Stock Volatility Dashboard</title>
+    <link rel="stylesheet" href="/static/dashboard.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="/static/dashboard.js"></script>
 </head>
+
 <body>
+    <header>
+        <h1>Real-Time Stock Volatility Dashboard</h1>
+        <div class="accent-line"></div>
+    </header>
 
-<h1>Real-Time Stock Volatility Dashboard</h1>
+    <main>
+        <div class="card">
+            <h2>Stock Price</h2>
+            <canvas id="priceChart"></canvas>
+        </div>
 
-<canvas id="priceChart" width="600" height="250"></canvas>
-<canvas id="volChart" width="600" height="250"></canvas>
+        <div class="card">
+            <h2>Volatility</h2>
+            <canvas id="volChart"></canvas>
+        </div>
 
-<h2 id="alertBox" style="color:red; margin-top:20px;"></h2>
+        <div class="alert-box" id="alertBox">
+            <p>No spike detected.</p>
+        </div>
+    </main>
 
+    <script src="/static/dashboard.js"></script>
 </body>
 </html>

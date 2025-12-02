@@ -7,7 +7,7 @@ from collections import deque
 # --------------------------
 # CONFIG
 # --------------------------
-RENDER_URL = "https://YOUR-RENDER-APP.onrender.com/ingest"
+RENDER_URL = "https://final-project-ee250.onrender.com/ingest"
 STOCK = "TSLA"
 WINDOW = 20
 SPIKE_THRESHOLD = 2.0
