@@ -1,34 +1,38 @@
 import yfinance as yf
 import numpy as np
-import socket
-import json
 import time
+import requests
 from collections import deque
 
-SERVER_IP = "YOUR_CLOUD_SERVER_IP"
-SERVER_PORT = 5001
+# --------------------------
+# CONFIG
+# --------------------------
+RENDER_URL = "https://YOUR-RENDER-APP.onrender.com/ingest"
 STOCK = "TSLA"
 WINDOW = 20
 SPIKE_THRESHOLD = 2.0
 
 prices = deque(maxlen=WINDOW)
 
+# --------------------------
 def get_price():
     try:
         ticker = yf.Ticker(STOCK)
         return float(ticker.fast_info['last_price'])
-    except:
+    except Exception as e:
+        print("Error fetching price:", e)
         return None
 
+# --------------------------
 def compute_volatility():
     if len(prices) < 2:
         return 0.0
-    return float(np.std(list(prices)))
+    arr = np.array(prices)
+    return float(np.std(arr))
 
-def run_client():
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.connect((SERVER_IP, SERVER_PORT))
-    print("Connected to cloud server.")
+# --------------------------
+def run():
+    print("Sending data to Render:", RENDER_URL)
 
     while True:
         price = get_price()
@@ -37,20 +41,23 @@ def run_client():
             continue
 
         prices.append(price)
-
-        vol = compute_volatility()
-        spike = vol > SPIKE_THRESHOLD
+        volatility = compute_volatility()
+        spike = volatility > SPIKE_THRESHOLD
 
         payload = {
             "stock": STOCK,
             "price": price,
-            "volatility": vol,
+            "volatility": volatility,
             "spike": spike,
-            "timestamp": time.time(),
+            "timestamp": time.time()
         }
 
-        sock.send((json.dumps(payload) + "\n").encode())
-        print("Sent:", payload)
+        try:
+            r = requests.post(RENDER_URL, json=payload, timeout=5)
+            print("Sent:", payload, "Status:", r.status_code)
+        except Exception as e:
+            print("Error posting:", e)
+
         time.sleep(1)
 
-run_client()
+run()
